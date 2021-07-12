@@ -14,10 +14,11 @@
 */
 
 // $router->get('/', function () use ($router) {
-//     // return $router->app->version();
-//     echo ("Hey there");
+//     return $router->app->version();
+//     // echo ("Hey there");
 // });
 
 $router->group(['prefix' => 'api'], function() use($router){
     $router->post('register','UserController@register');
+    $router->post('verify/{token}','UserController@get_verified');
 });

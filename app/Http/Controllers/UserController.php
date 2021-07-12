@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User;
+use App\Models\User;
+use App\Models\email_verify;
 
 class UserController extends Controller
 {
@@ -17,46 +18,54 @@ class UserController extends Controller
         //
     }
     public function register(Request $request){
-        // dd($request);
         $this->validate($request, [
         'username' => 'required',
         'email' => 'required|email|unique:users',
         'password' => 'required'
     ]);
-        // dd('user');
-        $input = $request->only('username','email','password','token');
-        // dd($input);
+        $input = $request->only('username','email','password');
         try{
             $user = new User;
-            $user->name = $input['username'];
+            $user->username = $input['username'];
             $user->email = $input['email'];
-            $password = $input['password'];
-            $user->password = app('hash')->make($password);
-            $user->token = $input['token'];
-
+            $user->password = app('hash')->make($input['password']);
+            $token = bin2hex(random_bytes(20));
+            $user->token = $token; 
             if($user->save() ){
-                // 'code' => 200;
+                Mailjob::dispatch(new verify_mail($user),$user);
+                 $code = 200;
                 $output = [
                     'user' => $user,
-                    // 'code' => $code,
-                    'message' => 'Registration Success'
+                    'code' => $code,
+                    'message' => 'Mail Send'
                 ];
             } else {
-                // 'code' = 500;
+                 $code = 200;
                  $output = [
-                    // 'code' => $code,
+                    'code' => $code,
                     'message' => 'Registration Not Success'
                 ];
             }
         } catch (Exception $e) {
-            // 'code' = $code;
-            $output = [
-                'code' => 500,
-                'message' => 'Error'
+                  $code = 500;
+                  $output = [
+                     'code' => $code,
+                     'message' => 'Error'
             ];
         }
 
-        return response()->json($output);
+        return response()->json($output,$code);
+    }
+    public function get_verified(String $token){
+        //
+        $check_e = User::where('token',$token)->first();
+        if($check_e){
+            $user = User::find($check_e->id);
+            $user->is_verify = true;
+            $user->save();
+            return response()->json(['message' => 'Verification success']);
+        }
+        return response()->json(['message' => 'Verification unsuccessful']);
     }
     //
 }

@@ -20,5 +20,15 @@
 
 $router->group(['prefix' => 'api'], function() use($router){
     $router->post('register','UserController@register');
-    $router->post('verify/{token}','UserController@get_verified');
+    $router->get('verify/{token}','UserController@get_verified');
+    $router->post('login','UserController@login');
+    $router->get('list','ManageController@userlist');
+    $router->get('me','ManageController@me');
+    $router->get('refresh','ManageController@refresh');
+    $router->post('delete','ManageController@delete');
+    $router->post('makeadmin','ManageController@makeadmin');
+    $router->post('removeadmin','ManageController@removeadmin');
+    $router->post('adduser','ManageController@adduser');
+    $router->post('forgotpass','UserController@forgotpassword');
+    $router->get('resetpassword/{token}','UserController@resetpassword');
 });

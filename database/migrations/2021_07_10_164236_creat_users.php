@@ -19,8 +19,12 @@ class CreatUsers extends Migration
             $table->string('username');
             $table->string('email')->unique()->notNullable();
             $table->string('password');  
-            $table->string('token', 20);
+            $table->string('confirm_password');
+            $table->string('token');
+            $table->string('created_by');
+            $table->string('deleted_by');
             $table->boolean('is_verify')->default(false);
+            $table->boolean('admin')->default(false);
             $table->timestamps();
         });
     }

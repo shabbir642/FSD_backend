@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\User;
 use App\Mail\Verifymail;
+use App\Mail\ResetingMail;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
 use Tymon\JWTAuth\JWTAuth;
@@ -61,7 +62,6 @@ class UserController extends Controller
         'email' => 'required',
         'password' => 'required',
     ]);
-          // $ur_token = $this->respondWithToken($authorised);
         $input = $request->only('email','password');
         if($authorised = Auth::attempt($input)){
             $token = $this->respondWithToken($authorised);
@@ -70,7 +70,6 @@ class UserController extends Controller
                 'message' => 'User authorised',
                 'token' => $token
             ];
-            // $expiry = Auth::factory()->getTTL()*60;
             // return response('Login Success')->withCookie(new cookie('token',$authorised,$expiry));
         }
         else{
@@ -82,8 +81,6 @@ class UserController extends Controller
         }
         return response()->json($output,$code);
     }
-
-
     public function forgotpassword(Request $request){
         $this->validate($request,[
             'email' => 'required|email',
@@ -93,11 +90,9 @@ class UserController extends Controller
         if($get_id){
             $user = User::find($get_id->id);
             if($user->is_verify){
-                // $response = $this->broker()->sendResetLink($email);
-                // return $response == Password::RESET_LINK_SENT
-                //            ? response()->json(true)
-                //            : response()->json(false);
-                 // Mail::to($user)->send(new Verifymail($user));
+                $token = bin2hex(random_bytes(20));
+                $user->token = $token; 
+                $user->save();
                 Mail::to($user)->send(new ResetingMail($user));
                 return response()->json(['message' => 'Mail send to reset password']);
             }
@@ -105,15 +100,22 @@ class UserController extends Controller
         }
         return response()->json(['message' => 'Email id do not exist']);
     }
-
-
+    public function passrequest(String $token){
+        $check_e = User::where('token',$token)->first();
+        if($check_e){
+            $user = User::find($check_e->id);
+            return response()->json(['message' => 'http://localhost:8000/api/resetpassword']);
+        }
+        return response()->json(['message' => 'Please use a valid email id']);
+    }
     public function resetpassword(Request $request){
         $this->validate($request,[
-            'token' => 'required',
+            'email' => 'required',
             'password' => 'required',
             'confirm_password' => 'required|same:password'
         ]);
-        $checkpass = User::where('token',$token)->first();
+        $email = $request->only('email');
+        $checkpass = User::where('email',$email)->first();
         if($checkpass){
             $user = User::find($checkpass->id);
             $user->password = app('hash')->make($request->input('password'));

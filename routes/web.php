@@ -29,6 +29,6 @@ $router->group(['prefix' => 'api'], function() use($router){
     $router->post('makeadmin','ManageController@makeadmin');
     $router->post('removeadmin','ManageController@removeadmin');
     $router->post('adduser','ManageController@adduser');
-    $router->post('forgotpass','UserController@forgotpassword');
-    $router->get('resetpassword/{token}','UserController@resetpassword');
+    $router->get('passrequest/{token}','UserController@passrequest');
+    $router->post('resetpassword','UserController@resetpassword');
 });

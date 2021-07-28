@@ -24,11 +24,20 @@ $router->group(['prefix' => 'api'], function() use($router){
     $router->post('login','UserController@login');
     $router->get('list','ManageController@userlist');
     $router->get('me','ManageController@me');
+    $router->get('logout','ManageController@logout');
     $router->get('refresh','ManageController@refresh');
     $router->post('delete','ManageController@delete');
     $router->post('makeadmin','ManageController@makeadmin');
     $router->post('removeadmin','ManageController@removeadmin');
     $router->post('adduser','ManageController@adduser');
+    $router->post('forgotpass','UserController@forgotpassword');
     $router->get('passrequest/{token}','UserController@passrequest');
     $router->post('resetpassword','UserController@resetpassword');
-});
+
+    $router->post('createtask','TaskController@createtask');
+    $router->get('viewtask/{id}','TaskController@viewtask');
+    $router->post('updatestatus','TaskController@updatestatus');
+    $router->patch('updatetask/{id}','TaskController@updatetask');
+    $router->get('deletetask/{id}','TaskController@deletetask');
+    $router->get('listask',['middleware' => 'Admin', 'uses' => 'TaskController@listtask']);
+ });

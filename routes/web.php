@@ -21,23 +21,29 @@
 $router->group(['prefix' => 'api'], function() use($router){
     $router->post('register','UserController@register');
     $router->get('verify/{token}','UserController@get_verified');
+    $router->get('countuser','ManageController@countuser');
     $router->post('login','UserController@login');
     $router->get('list','ManageController@userlist');
+    $router->get('filteruser/{keyword}','ManageController@filteruser');
     $router->get('me','ManageController@me');
     $router->get('logout','ManageController@logout');
     $router->get('refresh','ManageController@refresh');
-    $router->post('delete','ManageController@delete');
+    $router->delete('delete/{id}','ManageController@delete');
     $router->post('makeadmin','ManageController@makeadmin');
     $router->post('removeadmin','ManageController@removeadmin');
     $router->post('adduser','ManageController@adduser');
-    $router->post('forgotpass','UserController@forgotpassword');
-    $router->get('passrequest/{token}','UserController@passrequest');
+    $router->post('forgotpassword','UserController@forgotpassword');
     $router->post('resetpassword','UserController@resetpassword');
 
     $router->post('createtask','TaskController@createtask');
     $router->get('viewtask/{id}','TaskController@viewtask');
     $router->post('updatestatus','TaskController@updatestatus');
-    $router->patch('updatetask/{id}','TaskController@updatetask');
+    $router->post('updatetask','TaskController@updatetask');
     $router->get('deletetask/{id}','TaskController@deletetask');
-    $router->get('listask',['middleware' => 'Admin', 'uses' => 'TaskController@listtask']);
+    $router->post('mytask','TaskController@mytask');
+    $router->post('tasktome','TaskController@taskstome');
+    $router->post('filtertask','TaskController@filtertask');
+    $router->get('listask','TaskController@listtask');
+    $router->get('taskfortoday/{today}','TaskController@taskfortoday');
+    $router->get('counttask',['middleware' => 'Admin', 'uses' => 'TaskController@counttask']);
  });
